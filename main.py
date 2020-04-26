@@ -115,4 +115,4 @@ async def ban(ctx, member : discord.Member, *, reason="pas de raison"):
 
 
 
-client.run("NzA0MDk3MTA1NjE4MTQxMTg1.XqYNww.JbDdcFWD2LyA9jYzWVo6eDJgvGo")
+client.run("NzA0MDk3MTA1NjE4MTQxMTg1.XqYWrg.WULpxknMxv8SW4Bha7vPmX9YnJY")
