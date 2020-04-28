@@ -1,5 +1,10 @@
 import discord
 from discord.ext import commands
+import os
+import asyncio
+import webserver
+from webserver import keepalive
+import os
 
 
 client = commands.Bot(command_prefix='<')
@@ -17,15 +22,15 @@ async def on_ready():
 
 @client.event
 async def on_member_join(member):
-  wlcmchannel = client.get_channel(702949674583195739)
-  await wlcmchannel.send(f"bienvenue a toi @{member} dans le serveur TechNewsFR.   un serveur regroupant une communauté grandissante de développeurs et passionnés d'informatique et technologie ! , un serveur tres amusant ou tu ne t'enuiras jamais , et ou tu trouveras la reponse a tes questions ;). ")
-  await wlcmchannel.send(f"`-et toi tki ? tkoi ?`")
-  await wlcmchannel.send(f" je suis le bot de la TechNewsFR serveur codé par kross.  il suffit de faire `/aide` pour en savoir plus sur comment m'utiliser ! ")
+  dm = await member.create_dm()
+  await dm.send(f"__**Bienvenue a toi @{member} dans la TechNewsFR.**__ \n \n Nous sommes un serveur regroupant une communauté grandissante de développeurs et passionnés d'informatique et technologie ! , un serveur tres amusant ou tu ne t'enuiras jamais , et où tu trouveras la reponse a tes questions ;). \n \n `-et toi tki ? tkoi ?`\n Je suis le Bot de la TechNewsFR serveur codé par Kross.  Il suffit de faire `<aide` pour en savoir plus sur comment m'utiliser ! ")
+	
+	
 
 @client.event
 async def on_member_remove(member):
-	wlcmchannel = client.get_channel(702949674583195739)
-	await wlcmchannel.send(f"{member} a quitté le serveur , bon depart ! ")
+  www = client.get_channel(702949674583195739)
+  await www.send(f"{member} a quitté le serveur , bon depart ! ")
 
 
 
@@ -35,8 +40,8 @@ async def aide(ctx):
   embed.set_author(name="Tech News Fr bot")
   embed.add_field(name="<aide", value="envoies ceci en mp", inline=True)
   embed.add_field(name="<say [message] ", value="faites dire nimporte quoi au bot", inline=True)
-  embed.add_field(name="<", value=".", inline=True)
-  embed.add_field(name="<", value=".", inline=True)
+  embed.add_field(name="<code", value="comment mettre un bloc de code sur discord", inline=True)
+  embed.add_field(name="<mp", value="explique pourquoi il ne faut pas aider en mp", inline=True)
   embed.add_field(name="<", value=".", inline=True)
   embed.add_field(name="<", value=".", inline=True)
   embed.add_field(name="<", value=".", inline=True)
@@ -69,7 +74,12 @@ async def code(ctx):
 	await ctx.send("```ton_langage")
 	await ctx.send("ton code")
 	await ctx.send("```")
-	await ctx.send("exemple :\n ```python \n print('exemple') \n ```")
+	await ctx.send("exemple :\n ```python\nprint('exemple') \n```")
+
+@client.command()
+async def mp(ctx):
+  await ctx.send("l'aide en mp est fortement déconseillée !\ncar elle nuit a l'aprentissage collectif , si vous aidez une personne ne mp les autres ne pourront pas profiter de cette aide.")
+
 
 
 
@@ -90,29 +100,39 @@ async def clear(ctx, amount = 10):
   await ctx.channel.purge(limit=amount)
   await ctx.send(f"{amount} messages supprimés !")
 
+
 @client.command()
 @commands.has_permissions(kick_members=True, ban_members=True)
 async def kick(ctx, member : discord.Member, *, reason="pas de raison"):
-    await member.kick(reason=reason)
-    bb = ctx.message.author
-    kembed=discord.Embed(title=f"KOK KE KO , {member} s'est fait jarter du serveur",color=0xff1100)
-    kickpar = f"kick bar {bb}"
-    kembed.add_field(name="raison :",value=reason)
-    kembed.add_field(name="kick par :",value=bb)
-    await ctx.send(embed = kembed)
-
+  bb = ctx.message.author
+  kembed=discord.Embed(title=f"{member} s'est fait jarter du serveur",color=0xff1100)
+  kickpar = f"kick bar {bb}"
+  kembed.add_field(name="raison :",value=reason)
+  kembed.add_field(name="kick par :",value=bb)
+  a = await member.create_dm()
+  await a.send("tu a été kick du serveur !")
+  await a.send(embed= kembed)
+  await member.kick(reason=reason)
+  bb = ctx.message.author
+  await ctx.send(embed = kembed)
+  
+		
 @client.command()
 @commands.has_permissions(kick_members=True, ban_members=True)
 async def ban(ctx, member : discord.Member, *, reason="pas de raison"):
-    await member.ban(reason=reason)
-    bd = ctx.message.author
-    banpar = f"ban par : {bd}"
-    bembed=discord.Embed(title=f"{member} s'est pris le ban hammer",color=0xff1100 )
-    bembed.add_field(name="raison :",value=reason)
-    bembed.add_field(name="ban par :",value=bd)
-    await ctx.send(embed = bembed)
+  bd = ctx.message.author
+  banpar = f"ban par : {bd}"
+  bembed=discord.Embed(title=f"{member} s'est pris le ban hammer",color=0xff1100 )
+  bembed.add_field(name="raison :",value=reason)
+  bembed.add_field(name="ban par :",value=bd)
+  b = await member.create_dm()
+  b.send("tu a été ban du server !")
+  b.send(embed = bembed)
+  await member.ban(reason=reason)
+  await ctx.send(embed = bembed)
+  
 
 
-
-
-client.run("NzA0MDk3MTA1NjE4MTQxMTg1.XqYWrg.WULpxknMxv8SW4Bha7vPmX9YnJY")
+keepalive()
+TOKEN = os.environ.get("DISCORD_BOT_SECRET")
+client.run(TOKEN)
